@@ -71,6 +71,7 @@ const ProductUpdate = ({ data, show, onHide }) => {
                 setShowSuccessToast(true); // Set state to true
                 onHide();
                 refetch();
+
                 return (
                     <>
                         <div className="toast-container position-fixed bottom-0 end-0 p-3">

@@ -24,7 +24,16 @@ const ReactSideBar = () => {
                     </button>
                 </main>
                     {collapsed?<br className="mb-4"/>:<h2 className="text-center mb-8">Dashboard</h2>}
+
                 <Menu>
+                    <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
+                        <Link to="/income-Details" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
+                            <span className="flex items-center gap-x-3">
+                                <HandCoins size={20} strokeWidth={0.75}/>
+                                Income
+                            </span>
+                        </Link>
+                    </MenuItem>
                     <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
                         <Link to="/product" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <span className="flex items-center gap-x-3">
@@ -46,14 +55,6 @@ const ReactSideBar = () => {
                             <span className="flex items-center gap-x-3">
                                 <Star size={20} strokeWidth={0.75}/>
                                 Review
-                            </span>
-                        </Link>
-                    </MenuItem>
-                    <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
-                        <Link to="/income-Details" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
-                            <span className="flex items-center gap-x-3">
-                                <HandCoins size={20} strokeWidth={0.75}/>
-                                Income
                             </span>
                         </Link>
                     </MenuItem>
@@ -81,8 +82,6 @@ const ReactSideBar = () => {
                             </span>
                         </Link>
                     </MenuItem>
-
-
                     <MenuItem className="mt-[600px] flex items-end cursor-none" style={{ background:'none' }}>
                         <Link to="/login" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <div className="flex items-center gap-x-8">

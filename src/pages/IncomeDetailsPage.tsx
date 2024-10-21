@@ -5,22 +5,25 @@ import DemandBarGraph from "@/components/DemandBarGraph";
 import TodaySupplyPieChart from "@/components/TodaySupplyPieChart";
 
 const IncomeDetailsPage = () => {
+
     return(
-        <div className="border border-black">
-            <div className="flex justify-between">
-                <IncomeChart/>
-                <Expense/>
-            </div>
-            <div className="flex justify-between">
-                <SupplyBarGraph/>
-                <DemandBarGraph/>
-            </div>
+        <>
+            <h2>Dashboard Page</h2>
+            <div>
+                <div className="flex justify-between">
+                    <IncomeChart/>
+                    <Expense/>
+                </div>
+                <div className="flex justify-between">
+                    <SupplyBarGraph/>
+                    <DemandBarGraph/>
+                </div>
 
-            {/*<div className="flex justify-between">*/}
-            {/*    <TodaySupplyPieChart/>*/}
-            {/*</div>*/}
-        </div>
-
+                {/*<div className="flex justify-between">*/}
+                {/*    <TodaySupplyPieChart/>*/}
+                {/*</div>*/}
+            </div>
+        </>
     );
 }
 export default IncomeDetailsPage;

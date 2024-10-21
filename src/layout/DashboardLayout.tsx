@@ -5,7 +5,7 @@ const DashboardLayout = ({children}) => {
         <>
             <div className="h-screen w-screen flex">
                 <ReactSideBar/>
-                <div className="w-screen">
+                <div className="w-screen p-1">
                     <div className="flex-grow m-5">
                         {children}
                     </div>
