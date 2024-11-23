@@ -2,6 +2,9 @@ import {useEffect, useState} from "react";
 import {FaStar} from "react-icons/fa";
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "../components/ui/use-toast";
+import {ToastAction} from "../components/ui/toast";
+import * as React from "react";
 
 export type Ratings = {
     email: string | '',
@@ -13,7 +16,15 @@ export type Ratings = {
 const ReviewDetailPage = () => {
     const [ratings, setRatings] = useState<Ratings[]>([]);
     const [error, setError] = useState("");
-
+    const { toast } = useToast();
+    if(error){
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Error Getting Orders. Please try again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+    }
     useEffect(() => {
         getRatingData();
     }, []);
@@ -57,9 +68,13 @@ const ReviewDetailPage = () => {
                                           <button
                                               className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                               onClick={()=>{
-                                                  if(confirm('are you sure?')){
+                                                  if(confirm('are you sure Delete this review?')){
                                                       AxiosInstance.delete("/reviews/delete" + rating._id)
-                                                          .then(getRatingData);
+                                                          .then(getRatingData).then(r=>{
+                                                              toast({
+                                                                  description: "Supply Delete successfully!",
+                                                              });
+                                                          });;
                                                   }
                                               }}
                                           >Delete

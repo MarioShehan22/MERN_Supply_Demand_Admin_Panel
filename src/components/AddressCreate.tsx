@@ -6,6 +6,7 @@ import {useState} from "react";
 import {Address} from "@/pages/AddressPage";
 import {useGetAddress} from "@/api/AddressService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "./ui/use-toast";
 
 const AddressCreate = () => {
     const [data, setData] = useState<Address>({
@@ -15,12 +16,12 @@ const AddressCreate = () => {
         user: '',
         optional:''
     });
+    const { toast } = useToast();
     const{refetch} =useGetAddress();
     const handleInputChange = (e) => {
         const name = e.target.name;
         const value = e.target.value;
         setData((prevData) => ({ ...prevData, [name]: value }));
-        console.log(data);
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -33,6 +34,9 @@ const AddressCreate = () => {
                 city:'',
                 user: '',
                 optional:''
+            });
+            toast({
+                description: "Successful Create Address!",
             });
             refetch
         } catch (error) {

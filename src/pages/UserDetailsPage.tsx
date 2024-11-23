@@ -12,6 +12,8 @@ import UserInput from "@/components/UserInput";
 import UserUpdate from "@/components/UserUpdate";
 import {useGetUsers} from "@/api/UserService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "../components/ui/use-toast";
+import {ToastAction} from "../components/ui/toast";
 
 export type User={
     email:string|'';
@@ -160,8 +162,16 @@ const UserDetailsPage = () =>  {
     const [rowSelection, setRowSelection] = useState({});
     const[selectedUser,setSelectedUser] = useState({});
     const [modalShow, setModalShow] = useState<boolean>(false);
-    const{data,refetch}=useGetUsers();
-
+    const{data,refetch,error}=useGetUsers();
+    const { toast } = useToast();
+    if(error){
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Error Getting Orders. Please try again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+    }
     const table = useReactTable<User>({
         data: data, // Render table only if data exists
         columns,
@@ -278,9 +288,13 @@ const UserDetailsPage = () =>  {
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                             onClick={()=>{
-                                                if(confirm('are you sure?')){
+                                                if(confirm('are you sure Delete this user?')){
                                                     AxiosInstance.delete("/users/delete" +  row.original._id)
-                                                        .then(refetch);
+                                                        .then(refetch).then(r=>{
+                                                        toast({
+                                                            description: "User Delete successfully.",
+                                                        });
+                                                    });;
                                                 }
                                             }}
                                         >

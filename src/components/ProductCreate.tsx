@@ -57,7 +57,7 @@ const ProductCreate = () => {
         console.log(formData);
         try {
             const response = await AxiosInstance.post('/products/create', formData);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 toast({
                     description: 'Product created successfully!',
                 });

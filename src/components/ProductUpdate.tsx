@@ -8,12 +8,13 @@ import { useEffect, useRef, useState } from "react";
 import { Product } from "@/pages/ProductPage";
 import {useGetProduct} from "@/api/ProductService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "./ui/use-toast";
 
 const ProductUpdate = ({ data, show, onHide }) => {
-    const [showSuccessToast, setShowSuccessToast] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const{ refetch}=useGetProduct();
+    const { toast } = useToast()
     const [updateData, setUpdateData] = useState<Product>({
         ProductName: '',
         description: '',
@@ -56,7 +57,7 @@ const ProductUpdate = ({ data, show, onHide }) => {
         formData.append('showPrice', updateData.showPrice.toString());
         formData.append('purchasePrice', updateData.purchasePrice.toString());
         formData.append('QuantityInKilos', updateData.QuantityInKilos.toString());
-        formData.append('activeState', updateData.activeState);
+        formData.append('activeState', updateData.activeState.toString());
 
         if (selectedFile) {
             formData.append('imageUrl', fileInputRef.current?.files[0]);
@@ -68,25 +69,12 @@ const ProductUpdate = ({ data, show, onHide }) => {
                 updateData
             );
             if (response.status === 200) {
-                setShowSuccessToast(true); // Set state to true
+                toast({
+                    description: "Product Update successfully!",
+                });
                 onHide();
                 refetch();
 
-                return (
-                    <>
-                        <div className="toast-container position-fixed bottom-0 end-0 p-3">
-                            <div id="liveToast" className="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                                <div className="toast-header">
-                                    <strong className="me-auto">Update</strong>
-                                    <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close" />
-                                </div>
-                                <div className="toast-body">
-                                    Product Update successfully !!
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                );
             }
         } catch (error) {
             console.error("Error creating product:", error);

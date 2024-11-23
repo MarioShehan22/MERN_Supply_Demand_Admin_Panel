@@ -1,6 +1,9 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "@/components/ui/use-toast";
+import {ToastAction} from "@/components/ui/toast";
+import {Toaster} from "@/components/ui/toaster";
 
 const LoginPage = () => {
     const [email, setEmail]=useState('');
@@ -8,6 +11,7 @@ const LoginPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
     //const {setName} = useStore();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const login=async ()=>{
         try{
@@ -19,15 +23,23 @@ const LoginPage = () => {
                 expirationDate.setDate(expirationDate.getDate()+2);
                 const cookieValue=encodeURIComponent('token')+'=' +encodeURIComponent(response.data)+'; expires='+expirationDate.toUTCString()+'; path=/';
                 document.cookie=cookieValue;
+                toast({
+                    description: "Successful Login",
+                });
                 // setName(email);
 
                 setEmail('');
                 setPassword('');
                 navigate('/product');
             }
-
         }catch (e){
             setErrorMessage('Incorrect email or password. Please try again.');
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "Incorrect email or password. Please try again.",
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+            });
         }
     }
 
@@ -35,6 +47,7 @@ const LoginPage = () => {
         <>
             <div className="h-screen flex items-center relative justify-center">
                 <form className="mx-auto w-1/4">
+                    <Toaster />
                     <div className="mb-5">
                         <div className="text-5xl font-semibold leading-normal text-center">
                             Login

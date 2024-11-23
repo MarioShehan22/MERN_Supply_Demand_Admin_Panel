@@ -7,6 +7,7 @@ import {Input} from "@/components/ui/input";
 import Button from "react-bootstrap/Button";
 import {useGetUsers} from "@/api/UserService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "./ui/use-toast";
 
 const UserUpdate = ({data,show,onHide}) => {
     const [updateData, setUpdateData] = useState<User>({
@@ -20,7 +21,7 @@ const UserUpdate = ({data,show,onHide}) => {
         activeState:false
     });
     const{refetch}=useGetUsers();
-
+    const { toast } = useToast();
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name;
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -37,7 +38,9 @@ const UserUpdate = ({data,show,onHide}) => {
         e.preventDefault();
         try {
             await AxiosInstance.put(`/users/update/${data._id}`, updateData);
-            console.log("Updated");
+            toast({
+                description: "Successful Update successfully!",
+            });
             onHide();
             refetch
         } catch (error) {

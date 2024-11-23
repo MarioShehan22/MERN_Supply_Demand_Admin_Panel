@@ -11,6 +11,8 @@ import ProductCreate from "@/components/ProductCreate";
 import ProductUpdate from "@/components/ProductUpdate";
 import {useGetProduct} from "@/api/ProductService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "@/components/ui/use-toast";
+import {ToastAction} from "@/components/ui/toast";
 
 export type Product = {
     ProductName:string|''
@@ -102,7 +104,16 @@ const ProductPage = () =>  {
     const [modalShow, setModalShow] = useState<boolean>(false);
     const[selectedProduct,setSelectedProduct] = useState({});
 
-    const {data} =  useGetProduct();
+    const {data,error} =  useGetProduct();
+    const { toast } = useToast();
+    if(error){
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Error Getting Products. Please try again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+    }
     const table = useReactTable<Product>({
         data,
         columns,
@@ -219,8 +230,12 @@ const ProductPage = () =>  {
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                             onClick={()=>{
-                                                if(confirm('are you sure?')){
-                                                    AxiosInstance.delete("/products/delete/" + row.original._id);
+                                                if(confirm(`are you sure Delete this product?${row.original._id}`)){
+                                                    AxiosInstance.delete("/products/delete/" + row.original._id).then(r=>{
+                                                        toast({
+                                                            description: "Successful Delete Products!",
+                                                        });
+                                                    });
                                                 }
                                             }}
                                         >

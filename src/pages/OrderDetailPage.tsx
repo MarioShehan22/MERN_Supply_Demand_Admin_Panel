@@ -9,6 +9,8 @@ import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMen
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {UseGetOrder} from "@/api/OrderService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "../components/ui/use-toast";
+import {ToastAction} from "../components/ui/toast";
 
 export type Order = {
     cartItem:[];
@@ -140,7 +142,16 @@ const OrderDetailPage  = () => {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({});
-    const {data,refetch} = UseGetOrder();
+    const {data,refetch,error} = UseGetOrder();
+    const { toast } = useToast();
+    if(error){
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Error Getting Orders. Please try again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+    }
     const table = useReactTable<Order>({
         data,
         columns,
@@ -245,10 +256,14 @@ const OrderDetailPage  = () => {
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                             onClick={()=>{
-                                                if(confirm('are you sure?')){
+                                                if(confirm('are you sure Delete this Order?')){
                                                     AxiosInstance.delete("/orders/delete/" + row.original._id).then(
                                                         refetch
-                                                    );
+                                                    ).then(r=>{
+                                                        toast({
+                                                            description: "Order Delete successfully.",
+                                                        });
+                                                    });
                                                 }
                                             }}
                                         >

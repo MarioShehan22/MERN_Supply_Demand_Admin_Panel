@@ -5,6 +5,8 @@ import {useState} from "react";
 import {User} from "@/pages/UserDetailsPage";
 import {Button} from "@/components/ui/button";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "./ui/use-toast";
+import {ToastAction} from "./ui/toast";
 
 const UserInput = () => {
     const [data, setData] = useState<User>({
@@ -17,23 +19,26 @@ const UserInput = () => {
         password:'',
         activeState:false
     });
-
+    const { toast } = useToast();
     const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name;
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setData({...data,[name]: value});
-        console.log(data);
         //onInputChange(data);
     };
     const handleClick=(e)=>{
         setData({...data,role:e.target.value});
-        console.log({...data,role:e.target.value});
     }
     const handleSubmit= async (e)=>{
         e.preventDefault();
         try {
             console.log(data);
-            await AxiosInstance.post('/users/register', data);
+            const response = await AxiosInstance.post('/users/register', data);
+            if(response.status===201){
+                toast({
+                    description: "Successful Create User!",
+                });
+            }
             setData({
                 fistName: '',
                 email:'',
@@ -45,7 +50,12 @@ const UserInput = () => {
                 activeState:false
             });
         } catch (error) {
-            console.error('Error creating User:', error);
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "Error creating User. Please try again.",
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+            });
         }
     }
 

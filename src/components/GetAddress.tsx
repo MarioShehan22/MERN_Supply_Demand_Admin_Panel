@@ -9,9 +9,10 @@ import {Input} from "@/components/ui/input";
 import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {useGetAddress} from "@/api/AddressService";
-import axios from "axios";
 import AddressUpdate from "@/components/AddressUpdate";
 import AxiosInstance from "@/config/AxiosInstance";
+import {ToastAction} from "./ui/toast";
+import {useToast} from "./ui/use-toast";
 
 export const columns: ColumnDef<Address>[] = [
     {
@@ -89,7 +90,16 @@ const GetAddress = () => {
     const [rowSelection, setRowSelection] = useState({});
     const [modalShow, setModalShow] = useState<boolean>(false);
     const[selectedAddres,setSelectedAddres] = useState({});
-    const {data} = useGetAddress();
+    const {data,error} = useGetAddress();
+    const { toast } = useToast();
+    if(error){
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Error Getting Address. Please try again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+    }
     const table = useReactTable<Address>({
         data,
         columns,
@@ -204,8 +214,12 @@ const GetAddress = () => {
                                       <Button
                                           className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                           onClick={()=>{
-                                              if(confirm('are you sure?')){
-                                                  AxiosInstance.delete("/address/delete/" + row.original._id);
+                                              if(confirm(`are you sure Delete this Address?`)){
+                                                  AxiosInstance.delete("/address/delete/" + row.original._id).then(r=>{
+                                                      toast({
+                                                          description: "Successful Delete Address!",
+                                                      });
+                                                  });
                                               }
                                           }}
                                       >

@@ -1,4 +1,5 @@
 import ReactSideBar from "@/components/ReactSideBar";
+import {Toaster} from "@/components/ui/toaster";
 
 const DashboardLayout = ({children}) => {
     return(
@@ -9,6 +10,7 @@ const DashboardLayout = ({children}) => {
                     <div className="flex-grow m-5">
                         {children}
                     </div>
+                    <Toaster />
                 </div>
             </div>
         </>

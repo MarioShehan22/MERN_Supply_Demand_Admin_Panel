@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 import {useGetAddress} from "@/api/AddressService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "./ui/use-toast";
 
 const AddressUpdate = ({ data, show, onHide }) => {
     const [updateData, setUpdateData] = useState<Address>({
@@ -18,6 +19,7 @@ const AddressUpdate = ({ data, show, onHide }) => {
         optional:''
     });
     const{refetch} =useGetAddress();
+    const { toast } = useToast();
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -33,7 +35,9 @@ const AddressUpdate = ({ data, show, onHide }) => {
         e.preventDefault();
         try {
             await AxiosInstance.put(`/address/update/${data._id}`, updateData);
-            console.log("Updated");
+            toast({
+                description: "Successful Update Address!",
+            });
             onHide();
             refetch
         } catch (error) {

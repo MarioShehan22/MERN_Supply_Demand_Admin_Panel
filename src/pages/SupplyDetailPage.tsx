@@ -21,6 +21,8 @@ import {
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {UseGetSupply} from "@/api/SupplyService";
 import AxiosInstance from "@/config/AxiosInstance";
+import {useToast} from "../components/ui/use-toast";
+import {ToastAction} from "../components/ui/toast";
 
 export interface Supply {
     _id:string|'';
@@ -135,8 +137,16 @@ const SupplyDetailPage = () => {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({});
-    const {data,refetch} = UseGetSupply();
-
+    const {data,refetch,error} = UseGetSupply();
+    const { toast } = useToast();
+    if(error){
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Error Getting Supply. Please try again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+    }
     const table = useReactTable<Supply>({
         data,
         columns,
@@ -241,10 +251,14 @@ const SupplyDetailPage = () => {
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                             onClick={()=>{
-                                                if(confirm('are you sure?')){
+                                                if(confirm('are you sure Delete this Supply?')){
                                                     AxiosInstance.delete("/suppliers/delete/" + row.original._id).then(
                                                         refetch
-                                                    );
+                                                    ).then(r=>{
+                                                        toast({
+                                                            description: "Supply Delete successfully!",
+                                                        });
+                                                    });
                                                 }
                                             }}
                                         >
