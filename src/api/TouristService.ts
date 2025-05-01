@@ -1,11 +1,12 @@
-import {Address} from "@/pages/AddressPage";
+import {Address} from "@/pages/TouristPage.tsx";
 import {useQuery} from "@tanstack/react-query";
 import AxiosInstance from "@/config/AxiosInstance";
 
 export const useGetAddress = () => {
     const getAllAddress = async () => {
         try {
-            const response = await AxiosInstance.get<Address[]>("/address/find-all");
+            const response = await AxiosInstance.get<Address[]>("/tourist/find-all");
+            console.log(response.data.data);
             return response.data; // Return the product data (potentially empty)
         } catch (error) {
             console.error("Error fetching Address:", error);

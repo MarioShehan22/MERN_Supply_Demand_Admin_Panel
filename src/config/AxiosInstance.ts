@@ -1,20 +1,21 @@
-import axios, { AxiosInstance} from "axios";
+import axios, {AxiosInstance} from "axios";
 import BASE_URL from "./ApiConfig";
 
 const instance: AxiosInstance = axios.create({
     baseURL: BASE_URL
 });
 
-instance.interceptors.request.use(
-    (config) => {
-        const token = document.cookie.split('; ').find(record => record.startsWith('token=')) || null;
+instance.interceptors.request.use((config) => {
+    const tokenCookie = document.cookie.split('; ').find(row => row.startsWith('token='));
+    if (tokenCookie) {
+        const token = decodeURIComponent(tokenCookie.split('=')[1]);
         if (token) {
-            const tokenValue = token.split('=')[1];
-            config.headers.Authorization = tokenValue;
+            config.headers.Authorization = `Bearer ${token}`;
         }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+    }
+    return config;
+});
+
 
 export default instance;
+

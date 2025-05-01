@@ -1,4 +1,3 @@
-import * as React from "react"
 import {ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState} from "@tanstack/react-table";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Button} from "@/components/ui/button";
@@ -7,7 +6,6 @@ import {useState} from "react";
 import {Input} from "@/components/ui/input";
 import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import axios from "axios";
 import UserInput from "@/components/UserInput";
 import UserUpdate from "@/components/UserUpdate";
 import {useGetUsers} from "@/api/UserService";
@@ -15,15 +13,13 @@ import AxiosInstance from "@/config/AxiosInstance";
 import {useToast} from "../components/ui/use-toast";
 import {ToastAction} from "../components/ui/toast";
 
-export type User={
+export type User = {
     email:string|'';
-    fistName:string|'';
-    lastName:string|'';
-    phoneNumber:string|'';
-    businessName:string|'';
+    username:string|'';
     role:string|'';
-    password:string|'';
-    "activeState"?: boolean|undefined,
+    date_joined:Date|'';
+    last_login:Date|'';
+    "is_active"?: boolean|undefined,
 }
 export const columns: ColumnDef<User>[] = [
     {
@@ -64,64 +60,55 @@ export const columns: ColumnDef<User>[] = [
         cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
     },
     {
-        accessorKey: "fistName",
+        accessorKey: "username",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Fist Name
+                    User Name
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("fistName")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("username")}</div>,
     },
     {
-        accessorKey: "lastName",
+        accessorKey: "date_joined",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Last Name
+                    isJoin
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("lastName")}</div>,
+        cell: ({ row }) =>
+            <div className="lowercase">
+                {new Date(row.getValue("date_joined")).toLocaleDateString()}
+            </div>,
     },
     {
-        accessorKey: "phoneNumber",
+        accessorKey: "last_login",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Phone Number
+                    Last Login
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("phoneNumber")}</div>,
-    },
-    {
-        accessorKey: "businessName",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Business Name
-                    <CaretSortIcon className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("businessName")}</div>,
+        cell: ({ row }) =>
+            <div className="lowercase">
+                {new Date(row.getValue("last_login")).toLocaleDateString()}
+            </div>,
     },
     {
         accessorKey: "role",
@@ -139,7 +126,7 @@ export const columns: ColumnDef<User>[] = [
         cell: ({ row }) => <div className="lowercase">{row.getValue("role")}</div>,
     },
     {
-        accessorKey: "activeState",
+        accessorKey: "is_active",
         header: ({ column }) => {
             return (
                 <Button
@@ -151,7 +138,7 @@ export const columns: ColumnDef<User>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("activeState")?"True":"False"}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("is_active")?"True":"False"}</div>,
     },
 ]//ColumnDef in Order Table
 
@@ -162,7 +149,9 @@ const UserDetailsPage = () =>  {
     const [rowSelection, setRowSelection] = useState({});
     const[selectedUser,setSelectedUser] = useState({});
     const [modalShow, setModalShow] = useState<boolean>(false);
+
     const{data,refetch,error}=useGetUsers();
+
     const { toast } = useToast();
     if(error){
         toast({
@@ -192,11 +181,11 @@ const UserDetailsPage = () =>  {
     });
     return (
         <div className="w-full">
-            <UserInput
-                // onInputChange={(data:object)=>{
-                //     console.log(data);
-                // }}
-            />
+            {/*<UserInput*/}
+            {/*    // onInputChange={(data:object)=>{*/}
+            {/*    //     console.log(data);*/}
+            {/*    // }}*/}
+            {/*/>*/}
             <div className="flex items-center py-3">
                 <Input
                     placeholder="Filter users..."
@@ -287,16 +276,16 @@ const UserDetailsPage = () =>  {
                                     <TableCell className="text-center">
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
-                                            onClick={()=>{
-                                                if(confirm('are you sure Delete this user?')){
-                                                    AxiosInstance.delete("/users/delete" +  row.original._id)
-                                                        .then(refetch).then(r=>{
-                                                        toast({
-                                                            description: "User Delete successfully.",
-                                                        });
-                                                    });;
-                                                }
-                                            }}
+                                            // onClick={()=>{
+                                            //     if(confirm('are you sure Delete this user?')){
+                                            //         AxiosInstance.delete("/users/delete" +  row.original._id)
+                                            //             .then(refetch).then(r=>{
+                                            //             toast({
+                                            //                 description: "User Delete successfully.",
+                                            //             });
+                                            //         });;
+                                            //     }
+                                            // }}
                                         >
                                             Delete
                                         </Button>

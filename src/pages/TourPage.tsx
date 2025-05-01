@@ -1,4 +1,3 @@
-import * as React from "react"
 import {CaretSortIcon, ChevronDownIcon, } from "@radix-ui/react-icons"
 import {ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable,} from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
@@ -7,24 +6,31 @@ import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMen
 import { Input } from "@/components/ui/input"
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {useState} from "react";
-import ProductCreate from "@/components/ProductCreate";
-import ProductUpdate from "@/components/ProductUpdate";
-import {useGetProduct} from "@/api/ProductService";
+import {useGetTour} from "@/api/TourService.ts";
 import AxiosInstance from "@/config/AxiosInstance";
 import {useToast} from "@/components/ui/use-toast";
 import {ToastAction} from "@/components/ui/toast";
+import TourForm from "@/components/TourForm.tsx";
 
-export type Product = {
-    ProductName:string|''
+export type Tour = {
+    _id: string|'';
+    title:string|''
     description:string|''
-    showPrice: number|0
-    purchasePrice:number|0
-    QuantityInKilos:number|0
-    imageUrl:string|''
-    "activeState": boolean|undefined,
+    startDate: Date|''
+    endDate: Date|''
+    duration:number|0
+    price:number|0
+    maxParticipants:number|0
+    currentParticipants:number|0
+    image:string|''
+    guideId:string|''
+    status:string|''
+    cancellationPolicy:string|''
+    createdAt:string|''
+    // "activeState": boolean|undefined,
 }
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Tour>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -48,63 +54,152 @@ export const columns: ColumnDef<Product>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "ProductName",
+        accessorKey: "title",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    ProductName
+                    title
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("ProductName")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
     },
     {
-        accessorKey: "showPrice",
-        header: () => <div className="text-right">showPrice</div>,
+        accessorKey: "description",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    description
+                    <CaretSortIcon className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div className="lowercase">{row.getValue("description")}</div>,
+    },
+    {
+        accessorKey: "startDate",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    startDate
+                    <CaretSortIcon className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        },
+        cell: ({row}) => <div className="lowercase">
+            {new Date(row.getValue("startDate")).toLocaleDateString()}
+        </div>,
+    },
+    {
+        accessorKey: "endDate",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    endDate
+                    <CaretSortIcon className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        },
+        cell: ({row}) => <div className="lowercase">
+            {new Date(row.getValue("endDate")).toLocaleDateString()}
+        </div>,
+    },
+    {
+        accessorKey: "duration",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    duration
+                    <CaretSortIcon className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        },
+        cell: ({row}) => <div className="lowercase">{row.getValue("duration")}</div>,
+    },
+    {
+        accessorKey: "price",
+        header: () => <div className="text-right">price</div>,
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("showPrice"))
+            const amount = parseFloat(row.getValue("price"))
             const formatted = new Intl.NumberFormat("en-US", {
                 style: "currency",
-                currency: "LKR",
+                currency: "USD",
             }).format(amount);
             return  <div className="text-right font-medium">{formatted}</div>
         }
     },
     {
-        accessorKey: "purchasePrice",
-        header: () => <div className="text-right">purchasePrice</div>,
-        cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("purchasePrice"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "LKR",
-            }).format(amount)
-
-            return <div className="text-right font-medium">{formatted}</div>
+        accessorKey: "maxParticipants",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    maxParticipants
+                    <CaretSortIcon className="ml-2 h-4 w-4"/>
+                </Button>
+            )
         },
+        cell: ({row}) => <div className="lowercase">{row.getValue("maxParticipants")}</div>,
     },
     {
-        accessorKey: "description",
-        header: () => <div className="text-right">Description</div>,
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("description")}</div>
-        ),
+        accessorKey: "currentParticipants",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    currentParticipants
+                    <CaretSortIcon className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        },
+        cell: ({row}) => <div className="lowercase">{row.getValue("currentParticipants")}</div>,
+    },
+    {
+        accessorKey: "createdAt",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    createdAt
+                    <CaretSortIcon className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        },
+        cell: ({row}) => <div className="lowercase">{row.getValue("createdAt")}</div>,
     },
 ]
 
-const ProductPage = () =>  {
+const TourPage = () =>  {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({});
-    const [modalShow, setModalShow] = useState<boolean>(false);
-    const[selectedProduct,setSelectedProduct] = useState({});
+    //const [modalShow, setModalShow] = useState<boolean>(false);
+    //const[selectedProduct,setSelectedProduct] = useState({});
 
-    const {data,error} =  useGetProduct();
+    const {data,error} =  useGetTour();
     const { toast } = useToast();
     if(error){
         toast({
@@ -114,7 +209,7 @@ const ProductPage = () =>  {
             action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
     }
-    const table = useReactTable<Product>({
+    const table = useReactTable<Tour>({
         data,
         columns,
         "onSortingChange": setSorting,
@@ -135,12 +230,12 @@ const ProductPage = () =>  {
 
     return (
         <div className="w-full">
-            <ProductCreate/>
+            <TourForm/>
             <div className="flex items-center py-3">
                 <Input
-                    placeholder="Filter Product..."
-                    value={(table.getColumn("ProductName")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("ProductName")?.setFilterValue(event.target.value)}
+                    placeholder="Filter Tour..."
+                    value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+                    onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
                 <DropdownMenu>
@@ -217,11 +312,11 @@ const ProductPage = () =>  {
                                     <TableCell className="text-center">
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-green-500 text-black hover:bg-green-700 text-white duration-300 bg-none"
-                                                onClick={
-                                                    () => {
-                                                        setSelectedProduct(row.original);
-                                                        setModalShow(true);
-                                                    }}
+                                                // onClick={
+                                                //     () => {
+                                                //         setSelectedProduct(row.original);
+                                                //         setModalShow(true);
+                                                //     }}
                                         >
                                             Update
                                         </Button>
@@ -230,8 +325,8 @@ const ProductPage = () =>  {
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                             onClick={()=>{
-                                                if(confirm(`are you sure Delete this product?${row.original._id}`)){
-                                                    AxiosInstance.delete("/products/delete/" + row.original._id).then(r=>{
+                                                if(confirm(`are you sure Delete this product?${row.original?._id}`)){
+                                                    AxiosInstance.delete("/products/delete/" + row.original?._id).then(()=>{
                                                         toast({
                                                             description: "Successful Delete Products!",
                                                         });
@@ -281,15 +376,15 @@ const ProductPage = () =>  {
                     </Button>
                 </div>
             </div>
-            {modalShow && <ProductUpdate
-                data={selectedProduct}
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-            />}
+            {/*{modalShow && <ProductUpdate*/}
+            {/*    data={selectedProduct}*/}
+            {/*    show={modalShow}*/}
+            {/*    onHide={() => setModalShow(false)}*/}
+            {/*/>}*/}
         </div>
     )
 }
-export default ProductPage;
+export default TourPage;
 //console.log(row.original)
 //`http://localhost:3000/api/v1/products/find-all/${row.imageUrl}`
 //require(`./src/assets/1720639048787-Fish.jpg`).default

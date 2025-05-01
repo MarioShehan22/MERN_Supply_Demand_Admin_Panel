@@ -4,14 +4,7 @@ import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Table
 import AxiosInstance from "@/config/AxiosInstance";
 import {useToast} from "../components/ui/use-toast";
 import {ToastAction} from "../components/ui/toast";
-import * as React from "react";
-
-export type Ratings = {
-    email: string | '',
-    comment: string | '',
-    currentRating: number|0,
-    _id: string|'',
-}
+import {Ratings} from "@/lib/types.ts";
 
 const ReviewDetailPage = () => {
     const [ratings, setRatings] = useState<Ratings[]>([]);
@@ -66,15 +59,15 @@ const ReviewDetailPage = () => {
                                       </TableCell>
                                       <TableCell className="text-center">
                                           <button
-                                              className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
+                                              className="py-2 w-[100px] rounded-md bg-red-400 hover:bg-red-600 text-white duration-300 bg-none"
                                               onClick={()=>{
                                                   if(confirm('are you sure Delete this review?')){
                                                       AxiosInstance.delete("/reviews/delete" + rating._id)
-                                                          .then(getRatingData).then(r=>{
+                                                          .then(getRatingData).then(()=>{
                                                               toast({
                                                                   description: "Supply Delete successfully!",
                                                               });
-                                                          });;
+                                                          });
                                                   }
                                               }}
                                           >Delete
