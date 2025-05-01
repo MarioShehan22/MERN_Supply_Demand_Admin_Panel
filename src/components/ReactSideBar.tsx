@@ -1,16 +1,15 @@
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
-import { useState } from "react";
+import {useState} from "react";
 import {
-    BookOpenText,
-    Car,
+    Cable,
     CircleArrowLeft,
-    CircleArrowRight, CircleUser,
-    LayoutDashboard,
-    LogOut,
+    CircleArrowRight,
+    FishSymbol,
+    HandCoins, LogOut,
     MapPin,
+    ShoppingBasket,
     Star,
-    User,
-    UserRound
+    User
 } from "lucide-react";
 import {Link} from "react-router-dom";
 
@@ -19,28 +18,35 @@ const ReactSideBar = () => {
     return (
         <div style={{ display: 'flex', height: '100%', minHeight: '400px' }} className="border xl:600px md:450px">
             <Sidebar collapsed={collapsed} collapsedWidth="70px">
-                <main className="p-1 absolute top-0 right-0">
+                <main className="p-1 absolute right-0">
                     <button className="sb-button" onClick={() => setCollapsed(!collapsed)}>
                         {collapsed?<CircleArrowRight strokeWidth={0.75} className="hover:bg-slate-200 "/>:<CircleArrowLeft strokeWidth={0.75} />}
                     </button>
                 </main>
-                    {collapsed?<br className="mb-4"/>:<h4 className="text-center mb-8">Tour Plan</h4>}
+                    {collapsed?<br className="mb-4"/>:<h2 className="text-center mb-8">Dashboard</h2>}
 
                 <Menu>
-                    <MenuItem style={{ background:'none',flexShrink:3,cursor:'none' }}/>
                     <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
                         <Link to="/income-Details" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <span className="flex items-center gap-x-3">
-                                <LayoutDashboard size={20} strokeWidth={0.75}/>
-                                Dashboard
+                                <HandCoins size={20} strokeWidth={0.75}/>
+                                Income
                             </span>
                         </Link>
                     </MenuItem>
                     <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
-                        <Link to="/user-Details" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
+                        <Link to="/product" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <span className="flex items-center gap-x-3">
-                                <User size={20} strokeWidth={0.75}/>
-                                User
+                                <FishSymbol size={20} strokeWidth={0.75}/>
+                                Product
+                            </span>
+                        </Link>
+                    </MenuItem>
+                    <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
+                        <Link to="/order-Details" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
+                            <span className="flex items-center gap-x-3">
+                                <ShoppingBasket size={20} strokeWidth={0.75}/>
+                                Order Details
                             </span>
                         </Link>
                     </MenuItem>
@@ -53,48 +59,30 @@ const ReactSideBar = () => {
                         </Link>
                     </MenuItem>
                     <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
-                        <Link to="/tour" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
+                        <Link to="/user-Details" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <span className="flex items-center gap-x-3">
-                                <Car size={20} strokeWidth={0.75}/>
-                                Tour
+                                <User size={20} strokeWidth={0.75}/>
+                                User
                             </span>
                         </Link>
                     </MenuItem>
                     <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
-                        <Link to="/guide" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
+                        <Link to="/address" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <span className="flex items-center gap-x-3">
-                                <UserRound size={20} strokeWidth={0.75}/>
-                                Guide
-                            </span>
-                        </Link>
-                    </MenuItem>
-                    <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
-                        <Link to="/tourist" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
-                            <span className="flex items-center gap-x-3">
-                                <CircleUser size={20} strokeWidth={0.75}/>
-                                Tourist
-                            </span>
-                        </Link>
-                    </MenuItem>
-                    <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
-                        <Link to="/booking" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
-                            <span className="flex items-center gap-x-3">
-                                <BookOpenText size={20} strokeWidth={0.75}/>
-                                Booking
+                                <MapPin size={20} strokeWidth={0.75}/>
+                                Address
                             </span>
                         </Link>
                     </MenuItem>
                     <MenuItem className="mb-6 cursor-none" style={{ background:'none' }}>
                         <Link to="/supplier" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between mb-12 text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <span className="flex items-center gap-x-3">
-                                <MapPin size={20} strokeWidth={0.75}/>
-                                Location
+                                <Cable size={20} strokeWidth={0.75}/>
+                                Supplier Details
                             </span>
                         </Link>
                     </MenuItem>
-                    <MenuItem style={{ background:'none',flexShrink:3,cursor:'none' }}/>
-                    <MenuItem style={{ background:'none',flexShrink:3,cursor:'none' }}/>
-                    <MenuItem className="flex items-end cursor-none" style={{ background:'none' }}>
+                    <MenuItem className="mt-[600px] flex items-end cursor-none" style={{ background:'none' }}>
                         <Link to="/login" className="lg:w-[200px] h-[40px] md:w-max rounded-lg flex justify-between text-sm text-gray-500 no-underline hover:bg-sky-700 hover:cursor-pointer hover:text-white">
                             <div className="flex items-center gap-x-8">
                                <LogOut size={20} strokeWidth={0.75}/>

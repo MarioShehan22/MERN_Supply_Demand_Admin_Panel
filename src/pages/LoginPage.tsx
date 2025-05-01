@@ -13,47 +13,35 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    const login = async () => {
-        try {
-            const response = await AxiosInstance.post('/users/login', {
-                email,
-                password,
+    const login=async ()=>{
+        try{
+            const response = await AxiosInstance.post('/users/login',{
+                email,password
             });
-
-            if (response.status === 200 && response.data.token) {
+            if(response.status==200){
                 const expirationDate = new Date();
-                expirationDate.setDate(expirationDate.getDate() + 2);
-
-                // Store only the token string in cookie
-                document.cookie =
-                    encodeURIComponent('token') +
-                    '=' +
-                    encodeURIComponent(response.data.token) + // <-- token string here
-                    '; expires=' +
-                    expirationDate.toUTCString() +
-                    '; path=/';
-
+                expirationDate.setDate(expirationDate.getDate()+2);
+                const cookieValue=encodeURIComponent('token')+'=' +encodeURIComponent(response.data)+'; expires='+expirationDate.toUTCString()+'; path=/';
+                document.cookie=cookieValue;
                 toast({
-                    description: 'Successful Login',
+                    description: "Successful Login",
                 });
+                // setName(email);
 
                 setEmail('');
                 setPassword('');
-                navigate('/guide');
-            } else {
-                throw new Error('Token not found in response');
+                navigate('/product');
             }
-        } catch (e) {
+        }catch (e){
             setErrorMessage('Incorrect email or password. Please try again.');
             toast({
-                variant: 'destructive',
-                title: 'Uh oh! Something went wrong.',
-                description: 'Incorrect email or password. Please try again.',
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "Incorrect email or password. Please try again.",
                 action: <ToastAction altText="Try again">Try again</ToastAction>,
             });
         }
-    };
-
+    }
 
     return(
         <>

@@ -10,11 +10,13 @@ import {ToastAction} from "./ui/toast";
 
 const UserInput = () => {
     const [data, setData] = useState<User>({
+        fistName: '',
         email:'',
-        name:'',
+        lastName:'',
+        phoneNumber:'',
+        businessName:'',
         role:'',
-        lastLogin:'',
-        isJoin:'',
+        password:'',
         activeState:false
     });
     const { toast } = useToast();
@@ -38,11 +40,13 @@ const UserInput = () => {
                 });
             }
             setData({
+                fistName: '',
                 email:'',
-                name:'',
+                lastName:'',
+                phoneNumber:'',
+                businessName:'',
                 role:'',
-                lastLogin:'',
-                isJoin:'',
+                password:'',
                 activeState:false
             });
         } catch (error) {
@@ -60,24 +64,64 @@ const UserInput = () => {
           <form onSubmit={handleSubmit}>
               <div className="grid gap-4 xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2">
                   <div className="min-h-[50px] rounded-lg">
-                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="email">Email</Label>
+                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="fist Name">fistName</Label>
                       <Input
-                          type="email"
-                          name="email"
+                          type="text"
+                          name="fistName"
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2 "
                           onChange={handleInputChange}
-                          placeholder="john@gmail.com"
+                          placeholder="fistName"
                           // autoComplete={false}
                       />
                   </div>
                   <div className="min-h-[50px] rounded-lg">
-                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="name">name</Label>
+                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="email">email</Label>
                       <Input
                           type="text"
-                          name="name"
+                          name="email"
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
                           onChange={handleInputChange}
-                          placeholder="john"
+                          placeholder="email"
+                      />
+                  </div>
+                  <div className="min-h-[50px] rounded-lg">
+                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="lastName">lastName</Label>
+                      <Input
+                          type="text"
+                          name="lastName"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                          onChange={handleInputChange}
+                          placeholder="lastName"
+                      />
+                  </div>
+                  <div className="min-h-[50px] rounded-lg">
+                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="phoneNumber">phoneNumber</Label>
+                      <Input
+                          type="text"
+                          name="phoneNumber"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                          onChange={handleInputChange}
+                          placeholder="phoneNumber"
+                      />
+                  </div>
+                  <div className="min-h-[50px] rounded-lg">
+                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="businessName">businessName</Label>
+                      <Input
+                          type="text"
+                          name="businessName"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                          onChange={handleInputChange}
+                          placeholder="businessName"
+                      />
+                  </div>
+                  <div className="min-h-[50px] rounded-lg">
+                      <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="password">Password</Label>
+                      <Input
+                          type="text"
+                          name="password"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                          onChange={handleInputChange}
+                          placeholder="password"
                       />
                   </div>
                   <div className="min-h-[50px] rounded-lg">
@@ -119,3 +163,8 @@ const UserInput = () => {
 
 }
 export default UserInput;
+// onChange={
+// (e)=>{
+//     onInputNameChange(e.target.value);
+// }
+// }

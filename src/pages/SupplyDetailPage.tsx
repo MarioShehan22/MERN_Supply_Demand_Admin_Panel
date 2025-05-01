@@ -1,19 +1,37 @@
-import {ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState} from "@tanstack/react-table";
+import {
+    ColumnDef,
+    ColumnFiltersState, flexRender,
+    getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel,
+    SortingState,
+    useReactTable,
+    VisibilityState
+} from "@tanstack/react-table";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Button} from "@/components/ui/button";
 import {CaretSortIcon, ChevronDownIcon} from "@radix-ui/react-icons";
+import * as React from "react";
 import {useState} from "react";
 import {Input} from "@/components/ui/input";
-import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {UseGetGuides} from "@/api/GuideService";
+import {UseGetSupply} from "@/api/SupplyService";
 import AxiosInstance from "@/config/AxiosInstance";
 import {useToast} from "../components/ui/use-toast";
 import {ToastAction} from "../components/ui/toast";
-import {Guide} from "@/lib/types.ts";
 
-
-export const columns: ColumnDef<Guide>[] = [
+export interface Supply {
+    _id:string|'';
+    product: []; // Update with the actual type for cart items
+    totalPrice: number|0;
+    activeState: boolean|false;
+    date: string|'';
+}
+export const columns: ColumnDef<Supply>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -37,151 +55,99 @@ export const columns: ColumnDef<Guide>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "firstName",
+        accessorKey: "product",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    First Name
+                    CartItem
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div>{row.getValue("firstName")}</div>,
-    },
-    {
-        accessorKey: "lastName",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Last Name
-                    <CaretSortIcon className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div>{row.getValue("lastName")}</div>,
-    },
-    {
-        accessorKey: "expertise",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Expertise
-                    <CaretSortIcon className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => (
-            <div>
-                {row.getValue("expertise") && (row.getValue("expertise") as string[]).length > 0 ? (
-                    <div className="space-y-1">
-                        {(row.getValue("expertise") as string[]).map((item, index) => (
-                            <span key={index} className="inline-block bg-gray-100 px-2 py-1 rounded mr-1 mb-1">
-                                {item}
-                            </span>
-                        ))}
-                    </div>
+        cell: ({ row }) =>
+            <div className="lowercase">
+                {row.getValue("product").length > 0 ? (
+                    row.getValue("product").map((item, index) => (
+                        <ul key={index}>
+                            <li>
+                                {item.supply} : {item.ProductName}
+                            </li>
+                        </ul>
+                    ))
                 ) : (
-                    <p className="text-gray-500">No expertise listed</p>
+                    <p>No items in cart</p>
                 )}
-            </div>
-        ),
+            </div>,
     },
     {
-        accessorKey: "languages",
+        accessorKey: "supplierDetail",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Languages
+                    customerDetail
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => (
-            <div>
-                {row.getValue("languages") && (row.getValue("languages") as string[]).length > 0 ? (
-                    <div className="space-y-1">
-                        {(row.getValue("languages") as string[]).map((item, index) => (
-                            <span key={index} className="inline-block bg-blue-100 px-2 py-1 rounded mr-1 mb-1">
-                                {item}
-                            </span>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-gray-500">No languages listed</p>
-                )}
-            </div>
-        ),
+        cell: ({ row }) => <div className="lowercase">{row.getValue("supplierDetail")}</div>,
     },
     {
-        accessorKey: "phoneNumber",
+        accessorKey: "date",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Phone Number
+                    Date
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
+        cell: ({ row }) =>
+            <div className="lowercase">
+                {new Date(row.getValue("date")).toLocaleDateString()}
+            </div>,
     },
     {
-        accessorKey: "is_active",
+        accessorKey: "totalPrice",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Status
+                    Total Price
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => (
-            <div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    row.getValue("is_active") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                }`}>
-                    {row.getValue("is_active") ? "Active" : "Inactive"}
-                </span>
-            </div>
-        ),
+        cell: ({ row }) => <div className="lowercase">{row.getValue("totalPrice")}</div>,
     },
-]
+]//ColumnDef in Order Table
 
-const GuideDetailPage = () => {
+const SupplyDetailPage = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({});
-    const {data, refetch, error} = UseGetGuides();
+    const {data,refetch,error} = UseGetSupply();
     const { toast } = useToast();
-
     if(error){
         toast({
             variant: "destructive",
             title: "Uh oh! Something went wrong.",
-            description: "Error loading guides. Please try again.",
+            description: "Error Getting Supply. Please try again.",
             action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
     }
-
-    const table = useReactTable<Guide>({
+    const table = useReactTable<Supply>({
         data,
         columns,
         "onSortingChange": setSorting,
@@ -200,49 +166,13 @@ const GuideDetailPage = () => {
         },
     });
 
-    const handleToggleStatus = async (guideId: string, currentStatus: boolean) => {
-        try {
-            await AxiosInstance.patch(`/guides/${guideId}`, {
-                is_active: !currentStatus
-            });
-            refetch();
-            toast({
-                description: `Guide status updated successfully.`,
-            });
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Failed to update status",
-                description: "An error occurred while updating the guide status.",
-            });
-        }
-    };
-
-    const handleDeleteGuide = async (guideId: string) => {
-        if(confirm('Are you sure you want to delete this guide?')) {
-            try {
-                await AxiosInstance.delete(`/guides/${guideId}`);
-                refetch();
-                toast({
-                    description: "Guide deleted successfully.",
-                });
-            } catch (error) {
-                toast({
-                    variant: "destructive",
-                    title: "Failed to delete",
-                    description: "An error occurred while deleting the guide.",
-                });
-            }
-        }
-    };
-
     return (
         <div className="w-full">
             <div className="flex items-center py-3">
                 <Input
-                    placeholder="Filter guides by name..."
-                    value={(table.getColumn("firstName")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("firstName")?.setFilterValue(event.target.value)}
+                    placeholder="Filter Supply..."
+                    value={(table.getColumn("supplierDetail")?.getFilterValue() as string) ?? ""}
+                    onChange={(event) => table.getColumn("supplierDetail")?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
                 <DropdownMenu>
@@ -289,7 +219,8 @@ const GuideDetailPage = () => {
                                         </TableHead>
                                     )
                                 })}
-                                <TableHead className="text-center">Actions</TableHead>
+                                <TableHead className="text-center">Update</TableHead>
+                                <TableHead className="text-center">Delete</TableHead>
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -305,33 +236,31 @@ const GuideDetailPage = () => {
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
-                                            )}
+                                            )
+                                            }
                                         </TableCell>
                                     ))}
-                                    <TableCell className="flex justify-center space-x-2">
+                                    <TableCell className="text-center">
                                         <Button
-                                            className="py-2 w-[100px] rounded-md bg-blue-500 hover:bg-blue-700 text-white duration-300"
-                                            onClick={() => {
-                                                // Handle view details or edit
-                                                // You would typically navigate to a detail page
-                                                console.log("Edit guide:", row.original);
+                                            className="py-2 w-[100px] rounded-md bg-green-500 text-black hover:bg-green-700 text-white duration-300 bg-none"
+                                        >
+                                            Update
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        <Button
+                                            className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
+                                            onClick={()=>{
+                                                if(confirm('are you sure Delete this Supply?')){
+                                                    AxiosInstance.delete("/suppliers/delete/" + row.original._id).then(
+                                                        refetch
+                                                    ).then(r=>{
+                                                        toast({
+                                                            description: "Supply Delete successfully!",
+                                                        });
+                                                    });
+                                                }
                                             }}
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            className={`py-2 w-[100px] rounded-md text-white duration-300 ${
-                                                row.original.is_active
-                                                    ? "bg-amber-500 hover:bg-amber-700"
-                                                    : "bg-green-500 hover:bg-green-700"
-                                            }`}
-                                            onClick={() => handleToggleStatus(row.original._id, row.original.is_active)}
-                                        >
-                                            {row.original.is_active ? "Deactivate" : "Activate"}
-                                        </Button>
-                                        <Button
-                                            className="py-2 w-[100px] rounded-md bg-red-500 hover:bg-red-700 text-white duration-300"
-                                            onClick={() => handleDeleteGuide(row.original._id)}
                                         >
                                             Delete
                                         </Button>
@@ -341,10 +270,10 @@ const GuideDetailPage = () => {
                         ) : (
                             <TableRow>
                                 <TableCell
-                                    colSpan={columns.length + 1}
+                                    colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    No guides found.
+                                    No results.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -376,7 +305,6 @@ const GuideDetailPage = () => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
-
-export default GuideDetailPage;
+export default SupplyDetailPage;

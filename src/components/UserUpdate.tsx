@@ -9,20 +9,19 @@ import {useGetUsers} from "@/api/UserService";
 import AxiosInstance from "@/config/AxiosInstance";
 import {useToast} from "./ui/use-toast";
 
-// @ts-ignore
 const UserUpdate = ({data,show,onHide}) => {
     const [updateData, setUpdateData] = useState<User>({
+        fistName: '',
         email:'',
-        username:'',
+        lastName:'',
+        phoneNumber:'',
+        businessName:'',
         role:'',
-        last_login:'',
-        date_joined:'',
-        is_active:false
+        password:'',
+        activeState:false
     });
-
     const{refetch}=useGetUsers();
     const { toast } = useToast();
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name;
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -34,7 +33,7 @@ const UserUpdate = ({data,show,onHide}) => {
             setUpdateData((prevData) => ({ ...prevData, ...data }));
         }
     }, [data]); // Only run when data changes
-// @ts-ignore
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -48,7 +47,6 @@ const UserUpdate = ({data,show,onHide}) => {
             console.error('Error creating User:', error);
         }
     }
-    // @ts-ignore
     const handleClick=(e)=>{
         setUpdateData({...data,role:e.target.value});
         console.log({...data,role:e.target.value});
@@ -64,67 +62,68 @@ const UserUpdate = ({data,show,onHide}) => {
                   <Modal.Body>
                       <div className="flex items-center justify-center grid md:grid-cols-1">
                           <div className="min-h-[50px] rounded-lg">
-                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="email">Email</Label>
+                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="fistName">fistName</Label>
                               <Input
-                                  type="email"
+                                  type="text"
                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                                  name="fistName"
+                                  value={updateData.fistName}
+                                  onChange={handleInputChange}
+                                  placeholder="fistName"
+                              />
+                          </div>
+                          <div className="min-h-[50px] rounded-lg">
+                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="email">email</Label>
+                              <Input
+                                  type="text"
                                   name="email"
+                                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
                                   value={updateData.email}
                                   onChange={handleInputChange}
                                   placeholder="email"
                               />
                           </div>
                           <div className="min-h-[50px] rounded-lg">
-                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="name">Name</Label>
+                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="lastName">lastName</Label>
                               <Input
                                   type="text"
-                                  name="name"
                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
-                                  value={updateData.username}
+                                  name="lastName"
+                                  value={updateData.lastName}
                                   onChange={handleInputChange}
-                                  placeholder="name"
+                                  placeholder="lastName"
                               />
                           </div>
-                          {/*<div className="min-h-[50px] rounded-lg">*/}
-                          {/*    <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="lastName">lastName</Label>*/}
-                          {/*    <Input*/}
-                          {/*        type="text"*/}
-                          {/*        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"*/}
-                          {/*        name="lastName"*/}
-                          {/*        value={updateData.lastName}*/}
-                          {/*        onChange={handleInputChange}*/}
-                          {/*        placeholder="lastName"*/}
-                          {/*    />*/}
-                          {/*</div>*/}
-                          {/*<div className="min-h-[50px] rounded-lg">*/}
-                          {/*    <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="businessName">businessName</Label>*/}
-                          {/*    <Input*/}
-                          {/*        type="text"*/}
-                          {/*        name="businessName"*/}
-                          {/*        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"*/}
-                          {/*        value={updateData.businessName}*/}
-                          {/*        onChange={handleInputChange}*/}
-                          {/*        placeholder="businessName"*/}
-                          {/*    />*/}
-                          {/*</div>*/}
-                          {/*<div className="min-h-[50px] rounded-lg">*/}
-                          {/*    <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="phoneNumber">phoneNumber</Label>*/}
-                          {/*    <Input*/}
-                          {/*        type="text"*/}
-                          {/*        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"*/}
-                          {/*        name="phoneNumber"*/}
-                          {/*        value={updateData.phoneNumber}*/}
-                          {/*        onChange={handleInputChange}*/}
-                          {/*        placeholder="phoneNumber"*/}
-                          {/*    />*/}
-                          {/*</div>*/}
+                          <div className="min-h-[50px] rounded-lg">
+                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="businessName">businessName</Label>
+                              <Input
+                                  type="text"
+                                  name="businessName"
+                                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                                  value={updateData.businessName}
+                                  onChange={handleInputChange}
+                                  placeholder="businessName"
+                              />
+                          </div>
+                          <div className="min-h-[50px] rounded-lg">
+                              <Label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="phoneNumber">phoneNumber</Label>
+                              <Input
+                                  type="text"
+                                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-8 p-2"
+                                  name="phoneNumber"
+                                  value={updateData.phoneNumber}
+                                  onChange={handleInputChange}
+                                  placeholder="phoneNumber"
+                              />
+                          </div>
                           <div className="my-2 min-h-[50px] rounded-lg">
                               <Label className="block my-2 text-sm font-medium text-gray-900" htmlFor="role">role</Label>
                               <form id="dateFilterForm" className='min-h-[40px] text-gray-900 rounded-lg flex focus:ring-transparent'>
                                   <select id="dateFilterSelect" name="role" onClick={handleClick}>
+                                      <option value="Customer" className="text-gray-900">Customer</option>
+                                      <option value="Supplier" className="text-gray-900">Supplier</option>
                                       <option value="Admin" className="text-gray-900">Admin</option>
-                                      <option value="Guide" className="text-gray-900">Guide</option>
-                                      <option value="Tourist" className="text-gray-900">Tourist</option>
+                                      <option value="Manager" className="text-gray-900">Manager</option>
                                   </select>
                               </form>
                           </div>

@@ -1,31 +1,38 @@
-import * as React from "react"
 import {ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState} from "@tanstack/react-table";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Button} from "@/components/ui/button";
 import {CaretSortIcon, ChevronDownIcon} from "@radix-ui/react-icons";
-import {useState} from "react";
+import * as React from "react";
+import {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import axios from "axios";
-import UserInput from "@/components/UserInput";
-import UserUpdate from "@/components/UserUpdate";
-import {useGetUsers} from "@/api/UserService";
+import {UseGetOrder} from "@/api/OrderService";
 import AxiosInstance from "@/config/AxiosInstance";
 import {useToast} from "../components/ui/use-toast";
 import {ToastAction} from "../components/ui/toast";
 
-export type User={
-    email:string|'';
-    fistName:string|'';
-    lastName:string|'';
-    phoneNumber:string|'';
-    businessName:string|'';
-    role:string|'';
-    password:string|'';
-    "activeState"?: boolean|undefined,
+export type Order = {
+    cartItem:[];
+    customerDetail:{ // Define the structure of customerDetail object
+        _id: string;
+        email: string;
+        fistName: string; // Assuming a typo, should be "firstName"
+        lastName: string;
+        phoneNumber: string;
+        businessName: string;
+        role: string;
+        password: string; // Consider not including password in rendered data
+        activeState: boolean;
+        __v: number;
+        tokenVersion: number;
+    };
+    totalPrice: number|null;
+    activeState: boolean|undefined;
+    date:Date|'';
 }
-export const columns: ColumnDef<User>[] = [
+
+export const columns: ColumnDef<Order>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -49,120 +56,93 @@ export const columns: ColumnDef<User>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "email",
+        accessorKey: "cartItem",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Email
+                    CartItem
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+        cell: ({ row }) =>
+            <div className="lowercase">
+                {row.getValue('cartItem')?.length  > 0 ?(
+                    row.getValue("cartItem").map((item, index) => (
+                        <ul key={index}>
+                            <li>
+                                {item.quantity} : {item.name}
+                            </li>
+                        </ul>
+                    ))
+                ) : (
+                    <p>No items in cart</p>
+                )}
+            </div>,
     },
     {
-        accessorKey: "fistName",
+        accessorKey: "customerDetail",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Fist Name
+                    customerDetail
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("fistName")}</div>,
+        cell: ({ row }) => (
+            <div className="lowercase">
+                {row.getValue("customerDetail")?.email} {/* Access email property */}
+            </div>
+        ),
     },
     {
-        accessorKey: "lastName",
+        accessorKey: "date",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Last Name
+                    Date
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("lastName")}</div>,
+        cell: ({ row }) =>
+            <div className="lowercase">
+                {new Date(row.getValue("date")).toLocaleDateString()}
+            </div>,
     },
     {
-        accessorKey: "phoneNumber",
+        accessorKey: "totalPrice",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Phone Number
+                    Total Price
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("phoneNumber")}</div>,
-    },
-    {
-        accessorKey: "businessName",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Business Name
-                    <CaretSortIcon className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("businessName")}</div>,
-    },
-    {
-        accessorKey: "role",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    role
-                    <CaretSortIcon className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("role")}</div>,
-    },
-    {
-        accessorKey: "activeState",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    activeState
-                    <CaretSortIcon className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("activeState")?"True":"False"}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("totalPrice")}</div>,
     },
 ]//ColumnDef in Order Table
 
-const UserDetailsPage = () =>  {
+const OrderDetailPage  = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({});
-    const[selectedUser,setSelectedUser] = useState({});
-    const [modalShow, setModalShow] = useState<boolean>(false);
-    const{data,refetch,error}=useGetUsers();
+    const {data,refetch,error} = UseGetOrder();
     const { toast } = useToast();
     if(error){
         toast({
@@ -172,8 +152,8 @@ const UserDetailsPage = () =>  {
             action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
     }
-    const table = useReactTable<User>({
-        data: data, // Render table only if data exists
+    const table = useReactTable<Order>({
+        data,
         columns,
         "onSortingChange": setSorting,
         "onColumnFiltersChange": setColumnFilters,
@@ -190,18 +170,14 @@ const UserDetailsPage = () =>  {
             rowSelection,
         },
     });
+
     return (
         <div className="w-full">
-            <UserInput
-                // onInputChange={(data:object)=>{
-                //     console.log(data);
-                // }}
-            />
             <div className="flex items-center py-3">
                 <Input
-                    placeholder="Filter users..."
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? " "}
-                    onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}
+                    placeholder="Filter orders..."
+                    value={(table.getColumn("customerDetail")?.getFilterValue() as string) ?? ""}
+                    onChange={(event) => table.getColumn("customerDetail")?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
                 <DropdownMenu>
@@ -238,9 +214,7 @@ const UserDetailsPage = () =>  {
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id}
-                                                   className="text-center"
-                                        >
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -261,7 +235,6 @@ const UserDetailsPage = () =>  {
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="text-center"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
@@ -275,11 +248,6 @@ const UserDetailsPage = () =>  {
                                     <TableCell className="text-center">
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-green-500 text-black hover:bg-green-700 text-white duration-300 bg-none"
-                                                onClick={
-                                                    () => {
-                                                        setSelectedUser(row.original);
-                                                        setModalShow(true);
-                                                    }}
                                         >
                                             Update
                                         </Button>
@@ -288,13 +256,14 @@ const UserDetailsPage = () =>  {
                                         <Button
                                             className="py-2 w-[100px] rounded-md bg-red-400 text-black hover:bg-red-600 text-white duration-300 bg-none"
                                             onClick={()=>{
-                                                if(confirm('are you sure Delete this user?')){
-                                                    AxiosInstance.delete("/users/delete" +  row.original._id)
-                                                        .then(refetch).then(r=>{
+                                                if(confirm('are you sure Delete this Order?')){
+                                                    AxiosInstance.delete("/orders/delete/" + row.original._id).then(
+                                                        refetch
+                                                    ).then(r=>{
                                                         toast({
-                                                            description: "User Delete successfully.",
+                                                            description: "Order Delete successfully.",
                                                         });
-                                                    });;
+                                                    });
                                                 }
                                             }}
                                         >
@@ -340,12 +309,7 @@ const UserDetailsPage = () =>  {
                     </Button>
                 </div>
             </div>
-            {modalShow && <UserUpdate
-                data={selectedUser}
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-            />}
         </div>
     )
 }
-export default UserDetailsPage;
+export default OrderDetailPage;
